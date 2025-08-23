@@ -13,4 +13,10 @@ public class GlobalExceptionHandler {
         model.addAttribute("error", "El archivo es demasiado grande. El máximo permitido es 10MB por foto.");
         return "subir-foto";
     }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public String handleIllegalStateException(IllegalStateException ex, Model model) {
+        model.addAttribute("error", "La suma total de archivos supera el máximo permitido (80MB). Por favor selecciona menos o archivos más pequeños.");
+        return "subir-foto";
+    }
 }
