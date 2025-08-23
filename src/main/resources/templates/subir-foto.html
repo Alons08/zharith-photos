@@ -8,88 +8,78 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
         :root {
-            --rapunzel-gold: #FFD700;
-            --rapunzel-purple: #9370DB;
-            --rapunzel-pink: #FFB6C1;
-            --rapunzel-lavender: #E6E6FA;
-            --rapunzel-teal: #20B2AA;
-            --rapunzel-dark: #4B0082;
+            --rosa: #ff9ec3;
+            --dorado: #ffd700;
+            --lila: #b19cd9;
+            --blanco: #ffffff;
+            --texto: #4a4a4a;
         }
 
         body {
-            background: linear-gradient(135deg, var(--rapunzel-lavender) 0%, var(--rapunzel-pink) 50%, var(--rapunzel-gold) 100%);
+            background: linear-gradient(135deg, var(--rosa) 0%, var(--lila) 100%);
             min-height: 100vh;
-            font-family: 'Poppins', sans-serif;
-            color: var(--rapunzel-dark);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
         }
 
-        .rapunzel-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 25px;
-            box-shadow: 0 20px 40px rgba(147, 112, 219, 0.3);
+        .container-main {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            margin: 2rem auto;
-            max-width: 900px;
-            border: 3px solid var(--rapunzel-gold);
+            background: var(--blanco);
         }
 
-        .rapunzel-header {
-            background: linear-gradient(135deg, var(--rapunzel-purple) 0%, var(--rapunzel-teal) 100%);
+        .card-header {
+            background: linear-gradient(135deg, var(--lila) 0%, var(--rosa) 100%);
             color: white;
-            padding: 3rem 2rem;
+            padding: 30px 20px;
             text-align: center;
-            position: relative;
-            overflow: hidden;
+            border: none;
         }
 
-        .rapunzel-header::before {
-            content: '✨';
-            position: absolute;
-            font-size: 8rem;
-            opacity: 0.1;
-            top: -20px;
-            left: -20px;
+        .card-body {
+            padding: 30px;
         }
 
-        .rapunzel-header::after {
-            content: '🌸';
-            position: absolute;
-            font-size: 6rem;
-            opacity: 0.1;
-            bottom: -20px;
-            right: -20px;
-        }
-
-        .crown-icon {
-            font-size: 3rem;
-            color: var(--rapunzel-gold);
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .rapunzel-content {
-            padding: 3rem;
-            background: white;
+        .form-label {
+            font-weight: 600;
+            color: var(--lila);
+            margin-bottom: 10px;
+            font-size: 18px;
         }
 
         .form-control {
-            border: 3px solid var(--rapunzel-lavender);
-            border-radius: 20px;
-            padding: 18px;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 15px;
             font-size: 16px;
-            transition: all 0.3s ease;
-            background: rgba(230, 230, 250, 0.2);
+            margin-bottom: 20px;
         }
 
         .form-control:focus {
-            border-color: var(--rapunzel-purple);
-            box-shadow: 0 0 0 4px rgba(147, 112, 219, 0.2);
-            background: white;
+            border-color: var(--lila);
+            box-shadow: 0 0 0 3px rgba(177, 156, 217, 0.2);
         }
 
         .file-input-wrapper {
             position: relative;
-            margin-bottom: 2rem;
+            margin-bottom: 20px;
+        }
+
+        #fileInput {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
         }
 
         .file-input-label {
@@ -97,252 +87,172 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 3rem 2rem;
-            border: 3px dashed var(--rapunzel-purple);
-            border-radius: 20px;
-            background: linear-gradient(135deg, rgba(255, 214, 0, 0.1) 0%, rgba(147, 112, 219, 0.1) 100%);
+            padding: 40px 20px;
+            border: 3px dashed var(--lila);
+            border-radius: 15px;
+            background: rgba(177, 156, 217, 0.1);
             cursor: pointer;
             transition: all 0.3s ease;
             text-align: center;
         }
 
         .file-input-label:hover {
-            transform: scale(1.02);
-            border-color: var(--rapunzel-teal);
-            background: linear-gradient(135deg, rgba(255, 214, 0, 0.2) 0%, rgba(147, 112, 219, 0.2) 100%);
+            background: rgba(177, 156, 217, 0.2);
+            border-color: var(--rosa);
         }
 
         .file-input-label i {
-            font-size: 4rem;
-            color: var(--rapunzel-purple);
-            margin-bottom: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .file-input-label:hover i {
-            color: var(--rapunzel-teal);
-            transform: scale(1.1);
+            font-size: 48px;
+            color: var(--lila);
+            margin-bottom: 15px;
         }
 
         .preview-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 15px;
-            margin-top: 2rem;
-            max-height: 400px;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+            max-height: 300px;
             overflow-y: auto;
             padding: 10px;
-            background: rgba(230, 230, 250, 0.3);
-            border-radius: 15px;
-            border: 2px dashed var(--rapunzel-lavender);
+            background: rgba(177, 156, 217, 0.05);
+            border-radius: 10px;
+            border: 2px dashed var(--lila);
         }
 
         .preview-item {
             position: relative;
-            border-radius: 15px;
+            border-radius: 10px;
             overflow: hidden;
             aspect-ratio: 3/4;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .preview-item:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(147, 112, 219, 0.3);
         }
 
         .preview-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 15px;
+            border-radius: 10px;
         }
 
         .preview-remove {
             position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(255, 255, 255, 0.95);
-            border: 2px solid var(--rapunzel-purple);
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 25px;
+            height: 25px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             font-weight: bold;
-            color: var(--rapunzel-purple);
-            transition: all 0.3s ease;
+            color: #ff6b6b;
         }
 
-        .preview-remove:hover {
-            background: var(--rapunzel-purple);
-            color: white;
-            transform: scale(1.1);
-        }
-
-        .btn-rapunzel {
-            background: linear-gradient(135deg, var(--rapunzel-purple) 0%, var(--rapunzel-teal) 100%);
+        .btn-primary {
+            background: linear-gradient(135deg, var(--lila) 0%, var(--rosa) 100%);
             border: none;
-            border-radius: 50px;
-            padding: 18px 35px;
-            font-weight: 700;
+            border-radius: 25px;
+            padding: 15px 30px;
+            font-weight: 600;
             font-size: 18px;
             color: white;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(147, 112, 219, 0.4);
+            width: 100%;
+            margin-bottom: 15px;
         }
 
-        .btn-rapunzel:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 10px 25px rgba(147, 112, 219, 0.6);
-            color: white;
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(177, 156, 217, 0.4);
         }
 
-        .btn-outline-rapunzel {
-            border: 3px solid var(--rapunzel-purple);
-            color: var(--rapunzel-purple);
-            border-radius: 50px;
-            padding: 18px 35px;
-            font-weight: 700;
+        .btn-outline {
+            border: 2px solid var(--lila);
+            color: var(--lila);
+            border-radius: 25px;
+            padding: 15px 30px;
+            font-weight: 600;
             background: transparent;
             transition: all 0.3s ease;
+            width: 100%;
         }
 
-        .btn-outline-rapunzel:hover {
-            background: var(--rapunzel-purple);
+        .btn-outline:hover {
+            background: var(--lila);
             color: white;
-            transform: translateY(-2px);
         }
 
-        .alert {
-            border-radius: 20px;
-            border: none;
-            background: linear-gradient(135deg, var(--rapunzel-pink) 0%, var(--rapunzel-lavender) 100%);
-            color: var(--rapunzel-dark);
-            font-weight: 500;
-        }
-
-        .rapunzel-footer {
-            color: var(--rapunzel-dark);
+        footer {
             text-align: center;
-            padding: 2.5rem;
-            background: rgba(255, 255, 255, 0.9);
-            border-top: 3px solid var(--rapunzel-gold);
-        }
-
-        /* Animaciones */
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        @keyframes sparkle {
-            0% { opacity: 0; transform: scale(0); }
-            50% { opacity: 1; transform: scale(1.2); }
-            100% { opacity: 0; transform: scale(0); }
-        }
-
-        .animate-float {
-            animation: float 3s ease-in-out infinite;
-        }
-
-        .sparkle {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .sparkle::before {
-            content: '✨';
-            position: absolute;
-            animation: sparkle 2s ease-in-out infinite;
-            opacity: 0;
+            color: white;
+            margin-top: 30px;
+            padding: 20px;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .rapunzel-container {
-                margin: 1rem;
-                border-radius: 20px;
+            body {
+                padding: 15px;
             }
             
-            .rapunzel-header {
-                padding: 2.5rem 1.5rem;
+            .card-header {
+                padding: 25px 15px;
             }
             
-            .rapunzel-content {
-                padding: 2rem 1.5rem;
+            .card-body {
+                padding: 25px 20px;
             }
             
             .file-input-label {
-                padding: 2.5rem 1.5rem;
+                padding: 30px 15px;
             }
             
             .file-input-label i {
-                font-size: 3.5rem;
+                font-size: 40px;
             }
             
             .preview-container {
-                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-                max-height: 350px;
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+                max-height: 250px;
             }
             
-            .btn-rapunzel, .btn-outline-rapunzel {
-                padding: 16px 30px;
+            .btn-primary, .btn-outline {
+                padding: 12px 25px;
                 font-size: 16px;
             }
         }
 
         @media (max-width: 480px) {
-            .rapunzel-header h1 {
-                font-size: 2.2rem;
+            .card-header h1 {
+                font-size: 24px;
             }
             
-            .crown-icon {
-                font-size: 2.5rem;
-            }
-            
-            .preview-container {
-                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-                gap: 12px;
+            .form-label {
+                font-size: 16px;
             }
             
             .form-control {
-                padding: 16px;
+                padding: 12px;
             }
-        }
-
-        /* Scroll personalizado */
-        .preview-container::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .preview-container::-webkit-scrollbar-track {
-            background: var(--rapunzel-lavender);
-            border-radius: 10px;
-        }
-
-        .preview-container::-webkit-scrollbar-thumb {
-            background: var(--rapunzel-purple);
-            border-radius: 10px;
-        }
-
-        .preview-container::-webkit-scrollbar-thumb:hover {
-            background: var(--rapunzel-teal);
+            
+            .preview-container {
+                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container py-4">
-        <div class="rapunzel-container">
-            <div class="rapunzel-header">
-                <div class="crown-icon animate-float">👑</div>
-                <h1 class="display-4 fw-bold mb-3">Zharith's 15</h1>
-                <p class="mb-0 fs-5">¡Comparte la magia de esta noche de ensueño! ✨</p>
+    <div class="container-main">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="mb-3">📸 Zharith's 15</h1>
+                <p class="mb-0">Comparte tus mejores momentos</p>
             </div>
 
-            <div class="rapunzel-content">
+            <div class="card-body">
                 <form th:action="@{/subir}" method="post" enctype="multipart/form-data" id="uploadForm">
                     <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
                         <i class="bi bi-exclamation-triangle me-2"></i>
@@ -351,50 +261,53 @@
                     </div>
                     
                     <div class="mb-4">
-                        <label class="form-label fw-bold fs-5 text-rapunzel-purple">👑 Tu Nombre:</label>
+                        <label class="form-label">👤 Tu Nombre:</label>
                         <input type="text" class="form-control" 
                                th:field="*{fotoForm.nombreInvitado}"
-                               placeholder="Escribe tu nombre aquí..."
+                               placeholder="Escribe tu nombre aquí"
                                required>
                         <div class="text-danger mt-2" th:errors="*{fotoForm.nombreInvitado}"></div>
                     </div>
                     
                     <div class="mb-4">
-                        <label class="form-label fw-bold fs-5 text-rapunzel-purple">📸 Tus Fotos Mágicas:</label>
+                        <label class="form-label">🖼️ Selecciona tus fotos:</label>
                         <div class="file-input-wrapper">
-                            <input type="file" class="d-none" 
+                            <input type="file" 
                                    name="archivos" 
                                    id="fileInput" 
                                    multiple 
                                    accept="image/*"
                                    required>
                             <label for="fileInput" class="file-input-label">
-                                <i class="bi bi-stars"></i>
-                                <span class="fw-bold fs-6">¡Toca aquí para elegir tus fotos!</span>
-                                <small class="text-muted">Puedes seleccionar varias fotos a la vez</small>
+                                <i class="bi bi-cloud-arrow-up"></i>
+                                <span class="fw-bold">Toca para seleccionar fotos</span>
+                                <small class="text-muted">Máximo 10MB por foto</small>
                             </label>
                         </div>
                         <div class="text-danger mt-2" th:errors="*{fotoForm.archivos}"></div>
                     </div>
 
-                    <!-- Vista previa de fotos -->
                     <div class="mb-4" id="previewSection" style="display: none;">
-                        <label class="form-label fw-bold fs-5 text-rapunzel-purple">🎴 Fotos Seleccionadas:</label>
+                        <label class="form-label">📋 Fotos seleccionadas:</label>
                         <div class="preview-container" id="imagePreview"></div>
                     </div>
                     
-                    <div class="d-grid gap-3 mt-5">
-                        <button type="submit" class="btn btn-rapunzel sparkle">
-                            <i class="bi bi-magic me-2"></i> ¡Subir Fotos Mágicas!
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-cloud-upload me-2"></i> Subir Fotos
                         </button>
-                        <a href="/" class="btn btn-outline-rapunzel">
-                            <i class="bi bi-images me-2"></i> Ver Galería de Recuerdos
+                        <a href="/" class="btn btn-outline">
+                            <i class="bi bi-images me-2"></i> Ver Galería
                         </a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
+    <footer>
+        <p class="mb-0">© 2023 Fiesta de 15 Años de Zharith</p>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -404,16 +317,14 @@
             const previewSection = document.getElementById('previewSection');
             const selectedFiles = new DataTransfer();
 
-            fileInput.addEventListener('change', function(e) {
-                const files = e.target.files;
-                
-                // Limpiar vista previa anterior
+            // Función para mostrar vista previa
+            function showPreview(files) {
                 imagePreview.innerHTML = '';
                 
                 if (files.length > 0) {
                     previewSection.style.display = 'block';
                     
-                    Array.from(files).forEach((file, index) => {
+                    Array.from(files).forEach((file) => {
                         if (file.type.startsWith('image/')) {
                             const reader = new FileReader();
                             reader.onload = function(e) {
@@ -441,22 +352,29 @@
                                 previewItem.appendChild(img);
                                 previewItem.appendChild(removeBtn);
                                 imagePreview.appendChild(previewItem);
-                                
-                                // Agregar archivo a la transferencia de datos
-                                selectedFiles.items.add(file);
                             };
                             reader.readAsDataURL(file);
                         }
                     });
-                    
-                    // Actualizar el input de archivos
-                    fileInput.files = selectedFiles.files;
                 } else {
                     previewSection.style.display = 'none';
                 }
+            }
+
+            // Event listener para cambio de archivos
+            fileInput.addEventListener('change', function(e) {
+                const files = e.target.files;
+                selectedFiles.items.clear();
+                
+                Array.from(files).forEach(file => {
+                    selectedFiles.items.add(file);
+                });
+                
+                fileInput.files = selectedFiles.files;
+                showPreview(files);
             });
 
-            // Permitir arrastrar y soltar
+            // Arrastrar y soltar
             const dropArea = document.querySelector('.file-input-label');
             
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -477,35 +395,36 @@
             });
 
             function highlight() {
-                dropArea.style.borderColor = 'var(--rapunzel-teal)';
-                dropArea.style.background = 'linear-gradient(135deg, rgba(255, 214, 0, 0.3) 0%, rgba(147, 112, 219, 0.3) 100%)';
+                dropArea.style.background = 'rgba(177, 156, 217, 0.2)';
+                dropArea.style.borderColor = 'var(--rosa)';
             }
 
             function unhighlight() {
-                dropArea.style.borderColor = 'var(--rapunzel-purple)';
-                dropArea.style.background = 'linear-gradient(135deg, rgba(255, 214, 0, 0.1) 0%, rgba(147, 112, 219, 0.1) 100%)';
+                dropArea.style.background = 'rgba(177, 156, 217, 0.1)';
+                dropArea.style.borderColor = 'var(--lila)';
             }
 
-            dropArea.addEventListener('drop', handleDrop, false);
-
-            function handleDrop(e) {
+            dropArea.addEventListener('drop', function(e) {
                 const dt = e.dataTransfer;
                 const files = dt.files;
-                fileInput.files = files;
+                
+                selectedFiles.items.clear();
+                Array.from(files).forEach(file => {
+                    selectedFiles.items.add(file);
+                });
+                
+                fileInput.files = selectedFiles.files;
+                showPreview(files);
+                
+                // Disparar evento change manualmente
                 const event = new Event('change');
                 fileInput.dispatchEvent(event);
-            }
+            });
 
-            // Efectos de sparkle aleatorios
-            setInterval(() => {
-                const sparkles = document.querySelectorAll('.sparkle');
-                sparkles.forEach(sparkle => {
-                    const x = Math.random() * 100;
-                    const y = Math.random() * 100;
-                    sparkle.style.setProperty('--sparkle-x', `${x}%`);
-                    sparkle.style.setProperty('--sparkle-y', `${y}%`);
-                });
-            }, 2000);
+            // Asegurar que el input de file esté accesible
+            document.querySelector('.file-input-label').addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
         });
     </script>
 </body>
