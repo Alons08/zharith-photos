@@ -1,0 +1,22 @@
+# Archivos de entorno
+.env
+
+
+# Otros archivos comunes a ignorar
+*.log
+*.tmp
+*.bak
+
+# Maven
+/target/
+
+# IDEs
+/.idea/
+*.iml
+*.ipr
+*.iws
+/.vscode/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
