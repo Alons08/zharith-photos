@@ -1,4 +1,3 @@
-
 package com.alocode.controller;
 
 import com.alocode.dto.FotoForm;
@@ -99,13 +98,14 @@ public class FotoController {
                 model.addAttribute("error", "No se pudieron subir las fotos: " + String.join(", ", errores));
                 return "subir-foto";
             } else {
+                String plural = exitosas == 1 ? "foto subida" : "fotos subidas";
                 redirectAttributes.addFlashAttribute("warning", 
-                    "Se subieron " + exitosas + " fotos correctamente, pero hubo errores con: " + 
-                    String.join(", ", errores));
+                    "¡" + exitosas + " " + plural + ", pero hubo errores con: " + String.join(", ", errores));
             }
         } else {
+            String plural = exitosas == 1 ? "foto subida" : "fotos subidas";
             redirectAttributes.addFlashAttribute("success", 
-                "¡Todas las " + exitosas + " fotos se subieron correctamente!");
+                "¡" + exitosas + " " + plural + " correctamente!");
         }
 
         return "redirect:/";
