@@ -7,6 +7,11 @@ import com.alocode.service.AzureBlobStorageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,7 +21,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -28,8 +35,33 @@ public class FotoController {
 
     @GetMapping("/")
     public String galeria(Model model) {
-        model.addAttribute("fotos", fotoRepository.findAllByOrderByFechaSubidaDesc());
-        return "galeria";
+    // Cargar solo la primera página
+    Pageable pageable = PageRequest.of(0, 12, Sort.by("fechaSubida").descending());
+    Page<Foto> fotoPage = fotoRepository.findAll(pageable);
+
+    long totalFotos = fotoRepository.count();
+    model.addAttribute("fotos", fotoPage.getContent());
+    model.addAttribute("totalPages", fotoPage.getTotalPages());
+    model.addAttribute("currentPage", 0);
+    model.addAttribute("hasNext", fotoPage.hasNext());
+    model.addAttribute("totalFotos", totalFotos);
+
+    return "galeria";
+    }
+
+    // Endpoint para cargar más fotos (scroll infinito)
+    @GetMapping("/cargar-mas-fotos")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> cargarMasFotos(@RequestParam int page) {
+        Pageable pageable = PageRequest.of(page, 12, Sort.by("fechaSubida").descending());
+        Page<Foto> fotoPage = fotoRepository.findAll(pageable);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("fotos", fotoPage.getContent());
+        response.put("hasNext", fotoPage.hasNext());
+        response.put("nextPage", page + 1);
+        
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/subir")

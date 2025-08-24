@@ -331,6 +331,19 @@
             color: var(--morado);
         }
 
+        /* Indicador de carga para scroll infinito */
+        .loading-indicator {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: var(--morado);
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .header {
@@ -497,7 +510,7 @@
         <div class="gallery-container">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="h4 mb-0">
-                    <span th:text="${fotos.size()}"></span> Fotos Compartidas
+                    <span th:text="${totalFotos}"></span> Fotos Compartidas
                 </h2>
                 <a href="/subir" class="btn btn-primary">
                     <i class="bi bi-cloud-arrow-up me-2"></i>Subir Fotos
@@ -518,6 +531,14 @@
                         <div class="gallery-date" th:text="${#temporals.format(foto.fechaSubida, 'dd/MM/yyyy HH:mm')}"></div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Indicador de carga para scroll infinito -->
+            <div id="loadingIndicator" class="loading-indicator">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Cargando más fotos...</span>
+                </div>
+                <p class="mt-2">Cargando más fotos...</p>
             </div>
 
             <div th:if="${fotos.empty}" class="empty-state">
@@ -561,6 +582,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Variables para el scroll infinito
+            let nextPage = 1; // La siguiente página a cargar
+            const hasNext = [[${hasNext}]]; // Si hay más páginas desde el servidor
+            let isLoading = false;
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const galleryContainer = document.getElementById('gallery');
+            
             // Inicializar el modal de Bootstrap
             const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
             const modalImage = document.getElementById('modalImage');
@@ -568,24 +596,117 @@
             const modalDate = document.getElementById('modalDate');
             
             // Agregar evento de clic a cada elemento de la galería
-            const galleryItems = document.querySelectorAll('.gallery-item');
-            
-            galleryItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    const img = this.querySelector('img');
-                    const userName = this.querySelector('.gallery-name').textContent;
-                    const date = this.querySelector('.gallery-date').textContent;
-                    
-                    // Establecer los valores en el modal
-                    modalImage.src = img.dataset.src;
-                    modalImage.alt = 'Foto de ' + userName;
-                    modalUserName.textContent = 'Subido por: ' + userName;
-                    modalDate.textContent = 'Fecha: ' + date;
-                    
-                    // Mostrar el modal
-                    imageModal.show();
+            function attachGalleryItemEvents() {
+                const galleryItems = document.querySelectorAll('.gallery-item');
+                
+                galleryItems.forEach(item => {
+                    // Solo agregar el evento si no lo tiene ya
+                    if (!item.hasAttribute('data-event-attached')) {
+                        item.setAttribute('data-event-attached', 'true');
+                        
+                        item.addEventListener('click', function() {
+                            const img = this.querySelector('img');
+                            const userName = this.querySelector('.gallery-name').textContent;
+                            const date = this.querySelector('.gallery-date').textContent;
+                            
+                            // Establecer los valores en el modal
+                            modalImage.src = img.dataset.src;
+                            modalImage.alt = 'Foto de ' + userName;
+                            modalUserName.textContent = 'Subido por: ' + userName;
+                            modalDate.textContent = 'Fecha: ' + date;
+                            
+                            // Mostrar el modal
+                            imageModal.show();
+                        });
+                    }
                 });
-            });
+            }
+            
+            // Inicializar eventos para las imágenes cargadas inicialmente
+            attachGalleryItemEvents();
+            
+            // Función para cargar más fotos
+            function loadMorePhotos() {
+                if (isLoading || !hasNext) return;
+                
+                isLoading = true;
+                loadingIndicator.style.display = 'block';
+                
+                fetch('/cargar-mas-fotos?page=' + nextPage)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.fotos && data.fotos.length > 0) {
+                            // Crear elementos HTML para las nuevas fotos
+                            data.fotos.forEach(foto => {
+                                const galleryItem = document.createElement('div');
+                                galleryItem.className = 'gallery-item';
+                                
+                                const img = document.createElement('img');
+                                img.src = foto.url;
+                                img.className = 'gallery-img';
+                                img.alt = 'Foto de ' + foto.nombreInvitado;
+                                img.loading = 'lazy';
+                                img.setAttribute('data-src', foto.url);
+                                img.setAttribute('data-name', foto.nombreInvitado);
+                                img.setAttribute('data-date', new Date(foto.fechaSubida).toLocaleString('es-ES'));
+                                
+                                const galleryInfo = document.createElement('div');
+                                galleryInfo.className = 'gallery-info';
+                                
+                                const nameDiv = document.createElement('div');
+                                nameDiv.className = 'gallery-name';
+                                nameDiv.textContent = foto.nombreInvitado;
+                                
+                                const dateDiv = document.createElement('div');
+                                dateDiv.className = 'gallery-date';
+                                dateDiv.textContent = new Date(foto.fechaSubida).toLocaleString('es-ES');
+                                
+                                galleryInfo.appendChild(nameDiv);
+                                galleryInfo.appendChild(dateDiv);
+                                
+                                galleryItem.appendChild(img);
+                                galleryItem.appendChild(galleryInfo);
+                                
+                                galleryContainer.appendChild(galleryItem);
+                            });
+                            
+                            // Actualizar variables para la próxima carga
+                            nextPage = data.nextPage;
+                            
+                            // Adjuntar eventos a los nuevos elementos
+                            attachGalleryItemEvents();
+                        }
+                        
+                        // Actualizar el estado de si hay más páginas
+                        if (!data.hasNext) {
+                            window.removeEventListener('scroll', handleScroll);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error al cargar más fotos:', error);
+                    })
+                    .finally(() => {
+                        isLoading = false;
+                        loadingIndicator.style.display = 'none';
+                    });
+            }
+            
+            // Manejar el evento de scroll para carga infinita
+            function handleScroll() {
+                const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+                const windowHeight = window.innerHeight;
+                const documentHeight = document.documentElement.scrollHeight;
+                
+                // Cargar más fotos cuando el usuario esté a 200px del final
+                if (documentHeight - (scrollTop + windowHeight) < 200) {
+                    loadMorePhotos();
+                }
+            }
+            
+            // Agregar el event listener para el scroll si hay más páginas
+            if (hasNext) {
+                window.addEventListener('scroll', handleScroll);
+            }
             
             // Cerrar modal con la tecla Escape
             document.addEventListener('keydown', function(e) {
