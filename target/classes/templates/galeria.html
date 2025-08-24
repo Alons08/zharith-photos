@@ -70,6 +70,7 @@
             overflow: hidden;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
             transition: transform 0.3s ease;
+            cursor: pointer;
         }
 
         .gallery-item:hover {
@@ -139,6 +140,67 @@
             color: #dc3545;
         }
 
+        /* Modal personalizado */
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--lila) 0%, var(--rosa) 100%);
+            color: white;
+            border-bottom: none;
+            padding: 15px 20px;
+        }
+
+        .modal-body {
+            padding: 0;
+            text-align: center;
+            background-color: #f8f9fa;
+        }
+
+        .modal-footer {
+            border-top: none;
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-img {
+            max-width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+        }
+
+        .modal-close-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-user-info {
+            color: var(--lila);
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .modal-date-info {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .header {
@@ -164,6 +226,20 @@
             
             .gallery-info {
                 padding: 10px;
+            }
+
+            .modal-body {
+                padding: 0;
+            }
+
+            .modal-img {
+                max-height: 60vh;
+            }
+
+            .modal-footer {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
             }
         }
 
@@ -192,6 +268,30 @@
                 padding: 8px 16px;
                 font-size: 14px;
             }
+
+            .modal-header .modal-title {
+                font-size: 18px;
+            }
+
+            .modal-img {
+                max-height: 50vh;
+            }
+        }
+
+        /* Animación para el modal */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal.fade .modal-dialog {
+            transition: transform 0.3s ease-out;
+        }
+
+        /* Efecto de overlay oscuro */
+        .modal-backdrop.show {
+            opacity: 0.85;
+            background: linear-gradient(135deg, var(--rosa) 0%, var(--lila) 100%);
         }
     </style>
 </head>
@@ -230,10 +330,13 @@
             </div>
             
             <div class="gallery-grid" id="gallery">
-                <div class="gallery-item" th:each="foto : ${fotos}">
+                <div class="gallery-item" th:each="foto, status : ${fotos}" th:data-index="${status.index}">
                     <img th:src="${foto.url}" 
                          class="gallery-img" 
                          th:alt="'Foto de ' + ${foto.nombreInvitado}"
+                         th:data-src="${foto.url}"
+                         th:data-name="${foto.nombreInvitado}"
+                         th:data-date="${#temporals.format(foto.fechaSubida, 'dd/MM/yyyy HH:mm')}"
                          loading="lazy">
                     <div class="gallery-info">
                         <div class="gallery-name" th:text="${foto.nombreInvitado}"></div>
@@ -253,10 +356,76 @@
         </div>
     </div>
 
+    <!-- Modal para visualizar imagen -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">Foto</h5>
+                    <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <img id="modalImage" src="" class="modal-img" alt="Foto ampliada">
+                </div>
+                <div class="modal-footer">
+                    <div>
+                        <p id="modalUserName" class="modal-user-info"></p>
+                        <p id="modalDate" class="modal-date-info"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <p class="mb-0">© 2025 Fiesta de 15 Años de Zharith</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar el modal de Bootstrap
+            const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+            const modalImage = document.getElementById('modalImage');
+            const modalUserName = document.getElementById('modalUserName');
+            const modalDate = document.getElementById('modalDate');
+            
+            // Agregar evento de clic a cada elemento de la galería
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            
+            galleryItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const img = this.querySelector('img');
+                    const userName = this.querySelector('.gallery-name').textContent;
+                    const date = this.querySelector('.gallery-date').textContent;
+                    
+                    // Establecer los valores en el modal
+                    modalImage.src = img.dataset.src;
+                    modalImage.alt = 'Foto de ' + userName;
+                    modalUserName.textContent = 'Subido por: ' + userName;
+                    modalDate.textContent = 'Fecha: ' + date;
+                    
+                    // Mostrar el modal
+                    imageModal.show();
+                });
+            });
+            
+            // Cerrar modal con la tecla Escape
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    imageModal.hide();
+                }
+            });
+            
+            // También cerrar al hacer clic fuera de la imagen en el modal
+            document.getElementById('imageModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    imageModal.hide();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
