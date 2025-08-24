@@ -496,7 +496,9 @@
 
         <div class="gallery-container">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="h4 mb-0">Fotos Compartidas</h2>
+                <h2 class="h4 mb-0">
+                    <span th:text="${fotos.size()}"></span> Fotos Compartidas
+                </h2>
                 <a href="/subir" class="btn btn-primary">
                     <i class="bi bi-cloud-arrow-up me-2"></i>Subir Fotos
                 </a>
