@@ -601,7 +601,10 @@
             const uploadForm = document.getElementById('uploadForm');
             const submitBtn = document.getElementById('submitBtn');
             // Modal de carga
-            const modalCargando = new bootstrap.Modal(document.getElementById('modalCargando'));
+            const modalCargando = new bootstrap.Modal(document.getElementById('modalCargando'), {
+                backdrop: 'static', // No se cierra al hacer clic fuera
+                keyboard: false     // No se cierra con Escape
+            });
             
             const selectedFiles = new DataTransfer();
             let totalSize = 0;
